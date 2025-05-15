@@ -29,32 +29,26 @@ export function ApiSender({ data, fileName }: ApiSenderProps) {
     setShowErrors(false)
     setIsComplete(false)
 
-    const apiUrl = "https://api.assetwise.co.th/cis/api/Customer/SaveOtherSource"
-    const authHeader = "Basic YXN3X2Npc19jdXN0b21lcjphc3dfY2lzX2N1c3RvbWVyQDIwMjMh"
-
     let successCount = 0
     let failedCount = 0
     const newErrors: string[] = []
 
     for (let i = 0; i < data.length; i++) {
       try {
-        const response = await fetch(apiUrl, {
-          method: "POST",
+        const response = await fetch('/api/send-data', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
-            Authorization: authHeader,
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(data[i]),
         })
-
-        console.log(data[i])
 
         if (response.ok) {
           successCount++
         } else {
           failedCount++
-          const errorText = await response.text()
-          newErrors.push(`Item ${i + 1}: ${errorText || response.statusText}`)
+          const errorData = await response.json()
+          newErrors.push(`Item ${i + 1}: ${errorData.error || response.statusText}`)
         }
       } catch (error) {
         failedCount++
